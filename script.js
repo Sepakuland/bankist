@@ -83,6 +83,7 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 /////////////////////////////////////////////////
 
 const displayMovements = function (movements, sort = false) {
+  containerMovements.innerHTML = '';
   const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
   movs.forEach((mov, i) => {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
@@ -176,4 +177,46 @@ btnTransfer.addEventListener('click', function (e) {
     updateUI(currentAccount);
   }
   inputTransferAmount.value = inputTransferTo.value = '';
+});
+
+btnLoan.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputLoanAmount.value);
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
+    currentAccount.movements.push(amount);
+    updateUI(currentAccount);
+  }
+  inputLoanAmount.value = '';
+});
+
+btnClose.addEventListener('click', function (e) {
+  console.log('hiiiiiiiiii');
+  console.log(
+    inputCloseUsername.value,
+    currentAccount.username,
+    inputClosePin.value,
+    currentAccount.pin
+  );
+  e.preventDefault();
+  if (
+    inputCloseUsername.value === currentAccount.username &&
+    Number(inputClosePin.value) === currentAccount.pin
+  ) {
+    const index = accounts.findIndex(
+      acc => acc.username === currentAccount.username
+    );
+    console.log(index);
+    accounts.splice(index, 1);
+    containerApp.style.opacity = 0;
+  }
+
+  inputCloseUsername.value = inputClosePin.value = '';
+  labelWelcome.textContent = `Log in to get started`;
+});
+
+let sorted = false;
+btnSort.addEventListener('click', function (e) {
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted;
 });
